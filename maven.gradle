@@ -1,0 +1,135 @@
+/* ========================================================================== *
+ * MAVEN SNIPPET                                                              *
+ * -------------------------------------------------------------------------- *
+ *                                                                            *
+ * Adds a S3 repository (with access and secret keys) if configured to do so, *
+ * and always use jcenter and maven central (in that order).                  *
+ *                                                                            *
+ * Project properties:                                                        *
+ *                                                                            *
+ * - s3.repository: S3 bucket URL s3://{bucket}.s3-{region}.amazonaws.com/... *
+ * - s3.accessKey:  AWS access key for accessing the bucket                   *
+ * - s3.secretKey:  AWS secret key for accessing the bucket                   *
+ * - buildNumber:   The build number for *release* builds (no snapshots)      *
+ *                                                                            *
+ * Environment variables:                                                     *
+ *                                                                            *
+ * - S3_SECRET_KEY: Overrides the "s3.accessKey" property (Travis/Jenkins...) *
+ * - S3_SECRET_KEY: Overrides the "s3.secretKey" property (Travis/Jenkins...) *
+ * - BUILD_NUMBER:  Overrides the "buildNumber" property (Travis/Jankins...)  *
+ *                                                                            *
+ * ========================================================================== */
+
+apply plugin: 'maven-publish'
+
+// Repository from property
+def _repository = hasProperty('s3.repository') ? ext['s3.repository'] : null
+
+// Access and secret overridden from environment (think Jenkins/Travis/...)
+def _accessKey = System.getenv("S3_ACCESS_KEY")
+def _secretKey = System.getenv("S3_SECRET_KEY")
+
+// If not overridden, default to project properties
+if ((_accessKey == null) && hasProperty('s3.accessKey')) _accessKey = ext['s3.accessKey']
+if ((_secretKey == null) && hasProperty('s3.secretKey')) _secretKey = ext['s3.secretKey']
+
+/* ========================================================================== *
+/* Artifacts downloading                                                      *
+/* ========================================================================== */
+
+// Default repository name to "maven"
+if (_repository != null) {
+  repositories {
+    maven {
+      url _repository
+      credentials(AwsCredentials) {
+        accessKey _accessKey
+        secretKey _secretKey
+      }
+    }
+  }
+}
+
+// Always us JCenter and Maven Central
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
+/* ========================================================================== *
+/* Artifacts publishing                                                       *
+/* ========================================================================== */
+
+// Sources JAR for publishing
+task publishSourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+// JavaDoc JAR for publishing
+task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+// Instrument publications *ONLY* if we have artifactId or groupId
+if (hasProperty('artifactId') || hasProperty('groupId')) {
+
+  // If we have one, we need to have both
+  if (! hasProperty('artifactId'))
+    throw new GradleException('Missing project property "artifactId"')
+  if (! hasProperty('groupId'))
+    throw new GradleException('Missing project property "groupId"')
+  if (version == 'unspecified')
+    throw new GradleException('Project version is unspecified')
+
+  // Default version: attach build number or "-SNAPSHOT"
+  if (System.getenv('BUILD_NUMBER') != null) {
+    ext.buildNumber = System.getenv('BUILD_NUMBER')
+    version = version + '.' + ext['buildNumber']
+  } else if (hasProperty('buildNumber')) {
+    version = version + '.' + ext['buildNumber']
+  } else {
+    version = version + "-SNAPSHOT"
+  }
+
+  // Local variables
+  def _groupId = ext['groupId']
+  def _artifactId = ext['artifactId']
+  def _version = version
+
+  // Publish in our Maven repo (under build/maven)
+  publishing {
+    repositories {
+      maven {
+        url "$buildDir/maven"
+      }
+    }
+
+    publications {
+      main(MavenPublication) {
+        from components.java
+        groupId _groupId
+        artifactId _artifactId
+        version _version
+        artifact publishSourcesJar
+        artifact publishJavadocJar
+      }
+    }
+  }
+
+  // Upload if we have BOTH S3 configured and a build number (no snapshots)
+  if ((_repository != null) && hasProperty('buildNumber')) {
+    publishing {
+      repositories {
+        maven {
+          url _repository
+          credentials(AwsCredentials) {
+            accessKey _accessKey
+            secretKey _secretKey
+          }
+        }
+      }
+    }
+  }
+}
