@@ -1,0 +1,29 @@
+/* ========================================================================== *
+ * TEST-NG SNIPPET                                                            *
+ * -------------------------------------------------------------------------- *
+ *                                                                            *
+ * Dependencies and configuration for TestNG tests.                           *
+ *                                                                            *
+ * ========================================================================== */
+
+// Does not work in Android
+apply plugin: 'java'
+
+// Dependencies for compilation/runtime
+dependencies {
+  testCompile 'org.testng:testng:6.8.21'
+}
+
+// Configure testing
+test {
+  useTestNG();
+  testLogging {
+    events = [ "started", "skipped", "failed", "passed" ]
+    showStandardStreams = true
+    stackTraceFilters = []
+    exceptionFormat = 'full'
+    showStackTraces = true
+    showExceptions = true
+    showCauses = true
+  }
+}

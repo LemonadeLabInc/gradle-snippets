@@ -72,16 +72,8 @@ task publishJavadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
-// Instrument publications *ONLY* if we have artifactId or groupId
-if (hasProperty('artifactId') || hasProperty('groupId')) {
-
-  // If we have one, we need to have both
-  if (! hasProperty('artifactId'))
-    throw new GradleException('Missing project property "artifactId"')
-  if (! hasProperty('groupId'))
-    throw new GradleException('Missing project property "groupId"')
-  if (version == 'unspecified')
-    throw new GradleException('Project version is unspecified')
+// Instrument publications *ONLY* if we have a version
+if (version != 'unspecified') {
 
   // Default version: attach build number or "-SNAPSHOT"
   if (System.getenv('BUILD_NUMBER') != null) {
@@ -92,11 +84,6 @@ if (hasProperty('artifactId') || hasProperty('groupId')) {
   } else {
     version = version + "-SNAPSHOT"
   }
-
-  // Local variables
-  def _groupId = ext['groupId']
-  def _artifactId = ext['artifactId']
-  def _version = version
 
   // Publish in our Maven repo (under build/maven)
   publishing {
@@ -109,9 +96,6 @@ if (hasProperty('artifactId') || hasProperty('groupId')) {
     publications {
       main(MavenPublication) {
         from components.java
-        groupId _groupId
-        artifactId _artifactId
-        version _version
         artifact publishSourcesJar
         artifact publishJavadocJar
       }

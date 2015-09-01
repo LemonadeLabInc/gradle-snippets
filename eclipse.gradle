@@ -1,0 +1,17 @@
+/* ========================================================================== *
+ * ECLIPSE SNIPPET                                                            *
+ * -------------------------------------------------------------------------- *
+ *                                                                            *
+ * Dependencies and configuration for creating Eclipse projects.              *
+ *                                                                            *
+ * ========================================================================== */
+
+apply plugin: 'eclipse'
+
+eclipse {
+  classpath {
+    defaultOutputDir = file('.eclipse-out')
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}

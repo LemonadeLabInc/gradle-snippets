@@ -1,0 +1,71 @@
+/* ========================================================================== *
+ * NATIVE SUPPORT SNIPPET                                                     *
+ * -------------------------------------------------------------------------- *
+ *                                                                            *
+ * Attempt to build native code (src/main/native) using a Makefile.           *
+ *                                                                            *
+ * ========================================================================== */
+
+// We compile JNI...
+apply plugin: 'java'
+
+/* ========================================================================== */
+/* Native Compilation                                                         */
+/* ========================================================================== */
+
+// Prepare the JNI headers, this is outside of the normal compilation scope
+// as those headers should be checked into the repository...
+task nativeHeaders(type:Exec, group: 'Native', dependsOn: compileJava) {
+  description 'Prepares native JNI headers for compilation.'
+
+  // Our classpath: compiled sources and runtime dependencies
+  def _cp = files(sourceSets.main.output.classesDir, configurations.runtime)
+
+  // Invoke headers compilation
+  commandLine 'make',
+              '-C', "${projectDir}/src/main/native",
+              "CLASSPATH=${_cp.asPath}",
+              'clean',
+              'headers'
+}
+
+// Copy the native sources in our build dir
+task processNative(type: Copy) {
+  from("${projectDir}/src/main/native")
+  into("${buildDir}/native")
+}
+
+// Compile all native code and install in "classes"
+task compileNative(type:Exec, group: 'Build') {
+  description 'Compile native code'
+
+  dependsOn processNative
+  commandLine 'make',
+              '-C', "${buildDir}/native",
+              "DESTDIR=${sourceSets.main.output.classesDir}",
+              'clean',
+              'install'
+}
+
+// Inject native dependency
+tasks.classes.dependsOn compileNative
+
+/* ========================================================================== */
+/* Eclipse support                                                            */
+/* ========================================================================== */
+
+if (plugins.hasPlugin("eclipse")) {
+  eclipse {
+    classpath {
+      file {
+        withXml {
+          def node = it.asNode()
+          node.appendNode('classpathentry', [ kind: 'lib', path: 'build/native'])
+        }
+      }
+    }
+  }
+
+  // Compile the library for Eclipse
+  tasks.eclipse.dependsOn(compileNative)
+}
