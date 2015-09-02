@@ -14,7 +14,7 @@
  *                                                                            *
  * Environment variables:                                                     *
  *                                                                            *
- * - S3_SECRET_KEY: Overrides the "s3.accessKey" property (Travis/Jenkins...) *
+ * - S3_ACCESS_KEY: Overrides the "s3.accessKey" property (Travis/Jenkins...) *
  * - S3_SECRET_KEY: Overrides the "s3.secretKey" property (Travis/Jenkins...) *
  * - BUILD_NUMBER:  Overrides the "buildNumber" property (Travis/Jankins...)  *
  *                                                                            *
