@@ -15,18 +15,22 @@ apply plugin: 'java'
 
 // Prepare the JNI headers, this is outside of the normal compilation scope
 // as those headers should be checked into the repository...
-task nativeHeaders(type:Exec, group: 'Native', dependsOn: compileJava) {
+task nativeHeaders(group: 'Native', dependsOn: compileJava) << {
   description 'Prepares native JNI headers for compilation.'
 
   // Our classpath: compiled sources and runtime dependencies
   def _cp = files(sourceSets.main.output.classesDir, configurations.runtime)
 
-  // Invoke headers compilation
-  commandLine 'make',
-              '-C', "${projectDir}/src/main/native",
-              "CLASSPATH=${_cp.asPath}",
-              'clean',
-              'headers'
+  // Do not have this task to be "type:Exec", but rather invoke "exec" here
+  // directly... We need to have the "configurations.runtime" dependencies
+  // fully resolved before calling "make" and Gradle will complain.
+  exec {
+    commandLine 'make',
+                '-C', "${projectDir}/src/main/native",
+                "CLASSPATH=${_cp.asPath}",
+                'clean',
+                'headers'
+  }
 }
 
 // Copy the native sources in our build dir
@@ -36,10 +40,9 @@ task processNative(type: Copy) {
 }
 
 // Compile all native code and install in "classes"
-task compileNative(type:Exec, group: 'Build') {
+task compileNative(type:Exec, group: 'Build', dependsOn: processNative) {
   description 'Compile native code'
 
-  dependsOn processNative
   commandLine 'make',
               '-C', "${buildDir}/native",
               "DESTDIR=${sourceSets.main.output.classesDir}",
