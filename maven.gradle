@@ -33,6 +33,18 @@ def _secretKey = System.getenv("S3_SECRET_KEY")
 if ((_accessKey == null) && hasProperty('s3.accessKey')) _accessKey = ext['s3.accessKey']
 if ((_secretKey == null) && hasProperty('s3.secretKey')) _secretKey = ext['s3.secretKey']
 
+// Default version: attach build number or "-SNAPSHOT"
+if (version != 'unspecified') {
+  if (System.getenv('BUILD_NUMBER') != null) {
+    ext.buildNumber = System.getenv('BUILD_NUMBER')
+    version = version + '.' + ext['buildNumber']
+  } else if (hasProperty('buildNumber')) {
+    version = version + '.' + ext['buildNumber']
+  } else {
+    version = version + "-SNAPSHOT"
+  }
+}
+
 /* ========================================================================== *
 /* Artifacts downloading                                                      *
 /* ========================================================================== */
@@ -60,44 +72,14 @@ repositories {
 /* Artifacts publishing                                                       *
 /* ========================================================================== */
 
-// Sources JAR for publishing
-task publishSourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-// JavaDoc JAR for publishing
-task publishJavadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
 // Instrument publications *ONLY* if we have a version
 if (version != 'unspecified') {
-
-  // Default version: attach build number or "-SNAPSHOT"
-  if (System.getenv('BUILD_NUMBER') != null) {
-    ext.buildNumber = System.getenv('BUILD_NUMBER')
-    version = version + '.' + ext['buildNumber']
-  } else if (hasProperty('buildNumber')) {
-    version = version + '.' + ext['buildNumber']
-  } else {
-    version = version + "-SNAPSHOT"
-  }
 
   // Publish in our Maven repo (under build/maven)
   publishing {
     repositories {
       maven {
         url "$buildDir/maven"
-      }
-    }
-
-    publications {
-      main(MavenPublication) {
-        from components.java
-        artifact publishSourcesJar
-        artifact publishJavadocJar
       }
     }
   }
@@ -113,6 +95,36 @@ if (version != 'unspecified') {
             secretKey _secretKey
           }
         }
+      }
+    }
+  }
+}
+
+/* ========================================================================== *
+/* Java  publishing                                                           *
+/* ========================================================================== */
+
+if (plugins.hasPlugin('java') && (version != 'unspecified')) {
+
+  // Sources JAR for publishing
+  task publishSourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  // JavaDoc JAR for publishing
+  task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+  }
+
+  // Publish in our Maven repo (under build/maven)
+  publishing {
+    publications {
+      main(MavenPublication) {
+        from components.java
+        artifact publishSourcesJar
+        artifact publishJavadocJar
       }
     }
   }
