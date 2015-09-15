@@ -15,3 +15,55 @@ eclipse {
     downloadJavadoc = true
   }
 }
+
+/* ========================================================================== */
+/* Android support                                                            */
+/* ========================================================================== */
+
+if (plugins.hasPlugin('com.android.application') ||
+    plugins.hasPlugin('com.android.library')) {
+
+  // Create a "project.properties" for eclipse
+  task eclipseAndroid() << {
+    def prop = new Properties()
+    prop.target = "${android.compileSdkVersion}".toString()
+    def propFile = new File("${project.projectDir}/project.properties");
+    propFile.createNewFile();
+    prop.store(propFile.newWriter(), null);
+  }
+  tasks.eclipse.dependsOn eclipseAndroid
+
+  // Our Eclipse project and classpath
+  eclipse {
+    project {
+      natures 'com.android.ide.eclipse.adt.AndroidNature'
+    }
+
+    classpath {
+      sourceSets {
+        main {
+          java      { srcDirs = android.sourceSets.main.javaDirectories      }
+          resources { srcDirs = android.sourceSets.main.resourcesDirectories }
+        }
+        test {
+          java      { srcDirs = android.sourceSets.test.javaDirectories      }
+          resources { srcDirs = android.sourceSets.test.resourcesDirectories }
+        }
+        androidTest {
+          java      { srcDirs = android.sourceSets.androidTest.javaDirectories      }
+          resources { srcDirs = android.sourceSets.androidTest.resourcesDirectories }
+        }
+      }
+
+      containers = [ 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK',
+                     'com.android.ide.eclipse.adt.DEPENDENCIES',
+                     'com.android.ide.eclipse.adt.LIBRARIES' ]
+      plusConfigurations += [ configurations.provided,
+                              configurations.compile,
+                              configurations.testProvided,
+                              configurations.testCompile,
+                              configurations.androidTestProvided,
+                              configurations.androidTestCompile ]
+    }
+  }
+}
