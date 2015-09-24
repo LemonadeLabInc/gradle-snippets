@@ -100,30 +100,42 @@ if (version != 'unspecified') {
   }
 
   /* ======================================================================== *
+  /* Sources and Javadoc publishing                                           *
+  /* ======================================================================== */
+
+  // Sources JAR for publishing
+  task publishSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  // JavaDoc JAR for publishing
+  task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+  }
+
+  // Publish in our Maven repo (under build/maven)
+  publishing {
+    publications {
+      main(MavenPublication) {
+        artifact publishSourcesJar
+        artifact publishJavadocJar
+      }
+    }
+  }
+
+  /* ======================================================================== *
   /* Java  publishing                                                         *
   /* ======================================================================== */
 
   if (plugins.hasPlugin('java')) {
-
-    // Sources JAR for publishing
-    task publishSourcesJar(type: Jar, dependsOn: classes) {
-      classifier = 'sources'
-      from sourceSets.main.allSource
-    }
-
-    // JavaDoc JAR for publishing
-    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
-      classifier = 'javadoc'
-      from javadoc.destinationDir
-    }
 
     // Publish in our Maven repo (under build/maven)
     publishing {
       publications {
         main(MavenPublication) {
           from components.java
-          artifact publishSourcesJar
-          artifact publishJavadocJar
         }
       }
     }
@@ -135,32 +147,22 @@ if (version != 'unspecified') {
 
   if (plugins.hasPlugin('com.android.library')) {
 
-    // Fake task for JAR publication...
-    task publishAndroidJar(type: Jar, dependsOn: assembleDefault) {
-      // TODO: How to find the default variant???
-      from "${buildDir}/intermediates/classes/release"
-    }
+    // After evaluation of our Android project, inject our "from" in the main
+    // publication emulating a normal Java library but with an "AAR".
+    afterEvaluate {
 
-    // Sources JAR for publishing
-    task publishSourcesJar(type: Jar, dependsOn: assembleDefault) {
-      classifier = 'sources'
-      from sourceSets.main.allSource
-    }
+      // Combine our runtime and compile dependencies in a single set
+      def _backing = new org.gradle.api.internal.DefaultDomainObjectSet(Dependency.class);
+      def _dependencies = new org.gradle.api.internal.artifacts.DefaultDependencySet('android dependencies', _backing);
+      _dependencies.addAll(configurations.compile.dependencies)
+      _dependencies.addAll(configurations.runtime.dependencies)
 
-    // JavaDoc JAR for publishing
-    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
-      classifier = 'javadoc'
-      from javadoc.destinationDir
-    }
+      // Prepare our publication artifact (from the AAR)
+      def _artifact = new org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact(tasks.bundleRelease);
+      def _component = new org.gradle.api.internal.java.JavaLibrary(_artifact, _dependencies);
 
-    publishing {
-      publications {
-        main(MavenPublication) {
-          artifact publishAndroidJar
-          artifact publishSourcesJar
-          artifact publishJavadocJar
-        }
-      }
+      // Inject the "from" into our main publication
+      publishing.publications.main.from(_component);
     }
   }
 }
