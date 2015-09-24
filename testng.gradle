@@ -32,7 +32,7 @@ if (plugins.hasPlugin('com.android.application') ||
     plugins.hasPlugin('com.android.library')) {
 
   dependencies {
-    androidTestCompile 'de.lemona.android:android-testng:1.0.0'
+    androidTestCompile 'de.lemona.android:android-testng:1.1.0'
   }
 
   android {
