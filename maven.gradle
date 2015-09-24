@@ -159,7 +159,8 @@ if (version != 'unspecified') {
     }
 
     // After evaluation of our Android project, inject our "from" in the main
-    // publication emulating a normal Java library but with an "AAR".
+    // publication emulating a normal Java library but with the release JAR.
+    // We don't publish the AAR as it's not natively supported by Eclipse.
     afterEvaluate {
 
       // Combine our runtime and compile dependencies in a single set
@@ -169,7 +170,7 @@ if (version != 'unspecified') {
       _dependencies.addAll(configurations.runtime.dependencies)
 
       // Prepare our publication artifact (from the AAR)
-      def _artifact = new org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact(tasks.bundleRelease);
+      def _artifact = new org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact(tasks.packageReleaseJar);
       def _component = new org.gradle.api.internal.java.JavaLibrary(_artifact, _dependencies);
 
       // Inject the "from" into our main publication
