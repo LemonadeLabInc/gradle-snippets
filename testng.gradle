@@ -6,24 +6,38 @@
  *                                                                            *
  * ========================================================================== */
 
-// Does not work in Android
-apply plugin: 'java'
+// Configure for Java
+if (plugins.hasPlugin('java')) {
 
-// Dependencies for compilation/runtime
-dependencies {
-  testCompile 'org.testng:testng:6.8.21'
+  dependencies {
+    testCompile 'org.testng:testng:6.8.21'
+  }
+
+  test {
+    useTestNG();
+    testLogging {
+      events = [ "started", "skipped", "failed", "passed" ]
+      showStandardStreams = true
+      stackTraceFilters = []
+      exceptionFormat = 'full'
+      showStackTraces = true
+      showExceptions = true
+      showCauses = true
+    }
+  }
 }
 
-// Configure testing
-test {
-  useTestNG();
-  testLogging {
-    events = [ "started", "skipped", "failed", "passed" ]
-    showStandardStreams = true
-    stackTraceFilters = []
-    exceptionFormat = 'full'
-    showStackTraces = true
-    showExceptions = true
-    showCauses = true
+// Configure for Android
+if (plugins.hasPlugin('com.android.application') ||
+    plugins.hasPlugin('com.android.library')) {
+
+  dependencies {
+    androidTestCompile 'de.lemona.android:android-testng:1.0.0'
+  }
+
+  android {
+    defaultConfig {
+      testInstrumentationRunner 'de.lemona.android.testng.TestNGRunner'
+    }
   }
 }
