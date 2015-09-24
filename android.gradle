@@ -1,0 +1,45 @@
+/* ========================================================================== *
+ * ANDROID SNIPPET                                                            *
+ * -------------------------------------------------------------------------- *
+ *                                                                            *
+ * Sets up the basics of our Android projects.                                *
+ *                                                                            *
+ * ========================================================================== */
+
+// Create a "javadoc" task (emulating Java basically)
+task('javadoc', type: Javadoc, group: 'Documentation tasks') {
+  description 'Generates Javadoc API documentation'
+  options.links("http://docs.oracle.com/javase/7/docs/api/")
+  // No "package-list" file exists in Android docs
+  // options.links("http://d.android.com/reference/")
+  exclude '**/BuildConfig.java'
+  exclude '**/R.java'
+}
+
+// After evaluation we have a few things to do...
+afterEvaluate {
+
+  // Add Android class path to the Javadoc task *after* evaluating the rest
+  // of our project.
+  tasks.javadoc.classpath = files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar")
+
+  // Add sources and classes for every variant to our Javadoc task
+  android.libraryVariants.all { variant ->
+    tasks.javadoc.source += variant.javaCompile.source
+    tasks.javadoc.classpath += files(variant.javaCompile.classpath.files)
+  }
+
+  // It seems that snippets do not have access to classes loaded by the
+  // "main" project. Be sneaky and load the class manually...
+  def _androidClassLoader = android.getClass().getClassLoader()
+  def _androidTestTask = _androidClassLoader.loadClass('com.android.build.gradle.internal.tasks.AndroidTestTask')
+
+  // Tests logged at "LIFECYCLE" level (this requires hackery)
+  tasks.withType(_androidTestTask).each { _task ->
+    def _logger = _task.getILogger()
+    def _field = _logger.class.getDeclaredField('infoLogLevel');
+    _field.setAccessible(true);
+    _field.set(_logger, LogLevel.LIFECYCLE)
+  }
+}
+

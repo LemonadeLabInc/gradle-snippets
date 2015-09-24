@@ -98,33 +98,68 @@ if (version != 'unspecified') {
       }
     }
   }
-}
 
-/* ========================================================================== *
-/* Java  publishing                                                           *
-/* ========================================================================== */
+  /* ======================================================================== *
+  /* Java  publishing                                                         *
+  /* ======================================================================== */
 
-if (plugins.hasPlugin('java') && (version != 'unspecified')) {
+  if (plugins.hasPlugin('java')) {
 
-  // Sources JAR for publishing
-  task publishSourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+    // Sources JAR for publishing
+    task publishSourcesJar(type: Jar, dependsOn: classes) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+    }
+
+    // JavaDoc JAR for publishing
+    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+      from javadoc.destinationDir
+    }
+
+    // Publish in our Maven repo (under build/maven)
+    publishing {
+      publications {
+        main(MavenPublication) {
+          from components.java
+          artifact publishSourcesJar
+          artifact publishJavadocJar
+        }
+      }
+    }
   }
 
-  // JavaDoc JAR for publishing
-  task publishJavadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-  }
+  /* ======================================================================== *
+  /* Android Library publishing                                               *
+  /* ======================================================================== */
 
-  // Publish in our Maven repo (under build/maven)
-  publishing {
-    publications {
-      main(MavenPublication) {
-        from components.java
-        artifact publishSourcesJar
-        artifact publishJavadocJar
+  if (plugins.hasPlugin('com.android.library')) {
+
+    // Fake task for JAR publication...
+    task publishAndroidJar(type: Jar, dependsOn: assembleDefault) {
+      // TODO: How to find the default variant???
+      from "${buildDir}/intermediates/classes/release"
+    }
+
+    // Sources JAR for publishing
+    task publishSourcesJar(type: Jar, dependsOn: assembleDefault) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+    }
+
+    // JavaDoc JAR for publishing
+    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+      from javadoc.destinationDir
+    }
+
+    publishing {
+      publications {
+        main(MavenPublication) {
+          artifact publishAndroidJar
+          artifact publishSourcesJar
+          artifact publishJavadocJar
+        }
       }
     }
   }
