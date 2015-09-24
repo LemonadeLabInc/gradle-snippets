@@ -100,42 +100,30 @@ if (version != 'unspecified') {
   }
 
   /* ======================================================================== *
-  /* Sources and Javadoc publishing                                           *
-  /* ======================================================================== */
-
-  // Sources JAR for publishing
-  task publishSourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-  }
-
-  // JavaDoc JAR for publishing
-  task publishJavadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-  }
-
-  // Publish in our Maven repo (under build/maven)
-  publishing {
-    publications {
-      main(MavenPublication) {
-        artifact publishSourcesJar
-        artifact publishJavadocJar
-      }
-    }
-  }
-
-  /* ======================================================================== *
   /* Java  publishing                                                         *
   /* ======================================================================== */
 
   if (plugins.hasPlugin('java')) {
+
+    // Sources JAR for publishing
+    task publishSourcesJar(type: Jar) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+    }
+
+    // JavaDoc JAR for publishing
+    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+      from javadoc.destinationDir
+    }
 
     // Publish in our Maven repo (under build/maven)
     publishing {
       publications {
         main(MavenPublication) {
           from components.java
+          artifact publishSourcesJar
+          artifact publishJavadocJar
         }
       }
     }
@@ -146,6 +134,29 @@ if (version != 'unspecified') {
   /* ======================================================================== */
 
   if (plugins.hasPlugin('com.android.library')) {
+
+    // Sources JAR for publishing
+    task publishSourcesJar(type: Jar) {
+      classifier = 'sources'
+      from android.sourceSets.main.javaDirectories
+      from android.sourceSets.main.resourcesDirectories
+    }
+
+    // JavaDoc JAR for publishing
+    task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+      from javadoc.destinationDir
+    }
+
+    // Publish in our Maven repo (under build/maven)
+    publishing {
+      publications {
+        main(MavenPublication) {
+          artifact publishSourcesJar
+          artifact publishJavadocJar
+        }
+      }
+    }
 
     // After evaluation of our Android project, inject our "from" in the main
     // publication emulating a normal Java library but with an "AAR".
