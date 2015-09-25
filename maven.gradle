@@ -34,15 +34,27 @@ if ((_accessKey  == null) && hasProperty('s3.accessKey'))  _accessKey  = ext['s3
 if ((_secretKey  == null) && hasProperty('s3.secretKey'))  _secretKey  = ext['s3.secretKey']
 
 // Default version: attach build number or "-SNAPSHOT"
+def _tag = ' NOT A RELEASE BUILD '
 if (version != 'unspecified') {
   if (System.getenv('BUILD_NUMBER') != null) {
     ext.buildNumber = System.getenv('BUILD_NUMBER')
     version = version + '.' + ext['buildNumber']
+    _tag = version
   } else if (hasProperty('buildNumber')) {
     version = version + '.' + ext['buildNumber']
+    _tag = version
   } else {
     version = version + "-SNAPSHOT"
   }
+}
+
+/* ========================================================================== *
+/* Tag repository                                                             *
+/* ========================================================================== */
+
+task tagRelease(type:Exec) {
+  executable 'git'
+  args 'tag', '-a', '-m', "Build ${version}", "${_tag}"
 }
 
 /* ========================================================================== *
