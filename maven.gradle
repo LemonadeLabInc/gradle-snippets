@@ -14,24 +14,24 @@
  *                                                                            *
  * Environment variables:                                                     *
  *                                                                            *
- * - S3_ACCESS_KEY: Overrides the "s3.accessKey" property (Travis/Jenkins...) *
- * - S3_SECRET_KEY: Overrides the "s3.secretKey" property (Travis/Jenkins...) *
- * - BUILD_NUMBER:  Overrides the "buildNumber" property (Travis/Jankins...)  *
+ * - S3_REPOSITORY: Overrides the "s3.repository" property (Travis/Jenkins..) *
+ * - S3_ACCESS_KEY: Overrides the "s3.accessKey" property (Travis/Jenkins..)  *
+ * - S3_SECRET_KEY: Overrides the "s3.secretKey" property (Travis/Jenkins..)  *
+ * - BUILD_NUMBER:  Overrides the "buildNumber" property (Travis/Jankins..)   *
  *                                                                            *
  * ========================================================================== */
 
 apply plugin: 'maven-publish'
 
-// Repository from property
-def _repository = hasProperty('s3.repository') ? ext['s3.repository'] : null
-
-// Access and secret overridden from environment (think Jenkins/Travis/...)
-def _accessKey = System.getenv("S3_ACCESS_KEY")
-def _secretKey = System.getenv("S3_SECRET_KEY")
+// Repository, access and secret overridden from environment (think Jenkins/Travis/...)
+def _repository = System.getenv("S3_REPOSITORY")
+def _accessKey  = System.getenv("S3_ACCESS_KEY")
+def _secretKey  = System.getenv("S3_SECRET_KEY")
 
 // If not overridden, default to project properties
-if ((_accessKey == null) && hasProperty('s3.accessKey')) _accessKey = ext['s3.accessKey']
-if ((_secretKey == null) && hasProperty('s3.secretKey')) _secretKey = ext['s3.secretKey']
+if ((_repository == null) && hasProperty('s3.repository')) _repository = ext['s3.repository']
+if ((_accessKey  == null) && hasProperty('s3.accessKey'))  _accessKey  = ext['s3.accessKey']
+if ((_secretKey  == null) && hasProperty('s3.secretKey'))  _secretKey  = ext['s3.secretKey']
 
 // Default version: attach build number or "-SNAPSHOT"
 if (version != 'unspecified') {
