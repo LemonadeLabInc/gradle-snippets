@@ -31,7 +31,9 @@ if (plugins.hasPlugin('com.android.application') ||
     propFile.createNewFile();
     prop.store(propFile.newWriter(), null);
   }
+
   tasks.eclipse.dependsOn eclipseAndroid
+  tasks.eclipseClasspath.dependsOn cleanEclipseClasspath
 
   // Our Eclipse project and classpath
   eclipse {
