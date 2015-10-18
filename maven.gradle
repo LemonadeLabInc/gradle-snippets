@@ -76,6 +76,7 @@ if (_repository != null) {
 
 // Always us JCenter and Maven Central
 repositories {
+  url 'http://dl.bintray.com/lemonade/maven'
   jcenter()
   mavenCentral()
 }
