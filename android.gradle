@@ -24,9 +24,11 @@ afterEvaluate {
   tasks.javadoc.classpath = files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar")
 
   // Add sources and classes for every variant to our Javadoc task
-  android.libraryVariants.all { variant ->
-    tasks.javadoc.source += variant.javaCompile.source
-    tasks.javadoc.classpath += files(variant.javaCompile.classpath.files)
+  if (plugins.hasPlugin('com.android.library')) {
+    android.libraryVariants.all { variant ->
+      tasks.javadoc.source += variant.javaCompile.source
+      tasks.javadoc.classpath += files(variant.javaCompile.classpath.files)
+    }
   }
 
   // It seems that snippets do not have access to classes loaded by the
