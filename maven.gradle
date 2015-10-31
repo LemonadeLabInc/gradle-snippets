@@ -74,11 +74,12 @@ if (_repository != null) {
   }
 }
 
-// Always use our repository, then JCenter and Maven Central
+// Always use our repository, then JCenter, Maven Central, and Maven Local
 repositories {
   maven { url 'http://dl.bintray.com/lemonade/maven' }
   jcenter()
   mavenCentral()
+  mavenLocal()
 }
 
 /* ========================================================================== *
