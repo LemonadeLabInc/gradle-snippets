@@ -24,6 +24,20 @@ class JavaPlugin implements Plugin<Project> {
           test.runtimeClasspath += configurations.provided
         }
 
+        // Use TestNG by default with verbose logging
+        test {
+          useTestNG();
+          testLogging {
+            events = [ "started", "skipped", "failed", "passed" ]
+            showStandardStreams = true
+            stackTraceFilters = []
+            exceptionFormat = 'full'
+            showStackTraces = true
+            showExceptions = true
+            showCauses = true
+          }
+        }
+
         // Link JavaDOCs properly
         javadoc {
           options.links 'https://docs.oracle.com/javase/7/docs/api/'
