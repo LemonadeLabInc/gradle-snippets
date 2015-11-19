@@ -18,13 +18,18 @@ if (hasProperty('buildNumber')) {
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
-repositories {
-    jcenter()
+// Depend on Gradle API
+dependencies {
+  compile gradleApi()
 }
 
-dependencies {
-    compile 'org.gradle:gradle-core:2.6'
-    compile 'org.codehaus.groovy:groovy-all:2.4.4'
+// Eclipse configuration
+eclipse {
+  classpath {
+    defaultOutputDir = file('.eclipse-out')
+    downloadSources = true
+    downloadJavadoc = true
+  }
 }
 
 // Sources JAR for publishing

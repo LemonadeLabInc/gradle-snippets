@@ -1,15 +1,11 @@
 package de.lemona.gradle.plugins
 
-import org.gradle.api.Action
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.GradleException
-import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.javadoc.Javadoc
 
 class AndroidPlugin implements Plugin<Project> {
-
-  // Can't find this in Gradle's APIs and JARs, where is it?
-  def Javadoc = Class.forName('org.gradle.api.tasks.javadoc.Javadoc')
 
   void apply(Project project) {
     project.plugins.withId('com.android.application') { configAndroid(project) }
@@ -27,7 +23,7 @@ class AndroidPlugin implements Plugin<Project> {
     project.afterEvaluate {
       project.configure(project) {
 
-      // Load "AndroidTestTask" here, in case we don't have the android plugin
+      // Load "AndroidTestTask" here, we don't have the android plugin at compile time
       def _androidTestTask = Class.forName('com.android.build.gradle.internal.tasks.AndroidTestTask')
 
       // Tests logged at "LIFECYCLE" level (this requires hackery)

@@ -2,16 +2,12 @@ package de.lemona.gradle.plugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.GradleException
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+import org.gradle.api.internal.java.JavaLibrary
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.Jar
 
 class PublishPlugin implements Plugin<Project> {
-
-  // Can't find this in Gradle's APIs and JARs, where is it?
-  def Jar = Class.forName('org.gradle.api.tasks.bundling.Jar')
-  def MavenPublication = Class.forName('org.gradle.api.publish.maven.MavenPublication')
-  def JavaLibrary = Class.forName('org.gradle.api.internal.java.JavaLibrary')
 
   void apply(Project project) {
     // We just trigger our configurations on version/properties
@@ -87,7 +83,7 @@ class PublishPlugin implements Plugin<Project> {
             def _packageTask = tasks['package' + _variantName + 'Jar']
             def _artifact = new ArchivePublishArtifact(_packageTask);
             def _dependencies = configurations.compile.dependencies
-            def _component = JavaLibrary.newInstance(_artifact, _dependencies);
+            def _component = new JavaLibrary(_artifact, _dependencies);
 
             // Also get the AAR itself, to publish alongsite
             def _bundleTask = tasks['bundle' + _variantName]
