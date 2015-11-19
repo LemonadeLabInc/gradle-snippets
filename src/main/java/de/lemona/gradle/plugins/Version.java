@@ -49,7 +49,7 @@ public class Version {
     public String toString() {
         final StringBuilder builder = new StringBuilder().append(major).append('.').append(minor);
         if (build < 0) builder.append("-SNAPSHOT");
-        else builder.append('.').append(minor);
+        else builder.append('.').append(build);
         return builder.toString();
     }
 
