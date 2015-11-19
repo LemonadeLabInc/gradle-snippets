@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.GradleException
 import org.gradle.api.logging.LogLevel
 
-class InitPlugin implements Plugin<Project> {
+class GradlePlugin implements Plugin<Project> {
 
   void apply(Project project) {
     // Read out our user and project properties

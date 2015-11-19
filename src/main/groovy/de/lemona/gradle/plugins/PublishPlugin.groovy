@@ -101,7 +101,7 @@ class PublishPlugin implements Plugin<Project> {
               pom {
                 packaging = 'jar'
                 withXml {
-                  asNode().appendNode('properties', '')
+                  asNode().appendNode('properties')
                     .appendNode('versionCode', _versionCode)
                 }
               }

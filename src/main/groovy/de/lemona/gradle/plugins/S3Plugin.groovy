@@ -6,7 +6,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.credentials.AwsCredentials
 
-class S3RepositoryPlugin implements Plugin<Project> {
+class S3Plugin implements Plugin<Project> {
   void apply(Project project) {
 
     // Get our required properties to access S3
@@ -34,15 +34,12 @@ class S3RepositoryPlugin implements Plugin<Project> {
       // Also *PUBLISH* in the repository if needed
       plugins.withId('maven-publish') {
 
-        def _noUpload = Utilities.resolveValue(project, 'noUpload', 'NO_UPLOAD')
-        def _publishing = Utilities.resolveValue(project, 's3.repository.publish', 'S3_REPOSITORY_PUBLISH', _repository)
-
         // Define the S3 repository to publish to
         publishing {
           repositories {
             maven {
               name 's3'
-              url _publishing
+              url _repository
               credentials(AwsCredentials) {
                 accessKey _accessKey
                 secretKey _secretKey
