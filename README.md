@@ -11,6 +11,29 @@ customize the standard build conventions to the ones used at
 * [S3 Repository Plugin](#s3-repository-plugin)
 
 
+Important Note
+--------------
+
+Remember that both `group` and `version` **MUST** be specified **BEFORE**
+applying the [Main Plugin](#main-plugin).
+
+I do suggest to keep them in the `gradle.properties` file alongside the build
+itself.
+
+This is especially evident when applying plugins with the new plugin loading
+mechanism, where `plugins` must come before `group` or `version`
+
+```
+plugins {
+  id 'de.lemona.gradle' version '0.0.1'
+}
+
+// Wrong! Specified after the plugin is applied
+group 'de.lemona.myproject'
+version '1.2'
+```
+
+
 Main Plugin
 -----------
 
