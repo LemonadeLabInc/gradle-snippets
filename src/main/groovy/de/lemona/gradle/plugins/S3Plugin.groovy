@@ -18,7 +18,7 @@ class S3Plugin implements Plugin<Project> {
     project.configure(project) {
 
       // Inform of our S3 repository
-      logger.info('Using S3 repository at \"{}\"', _repositoryPath.toURI())
+      logger.info('Using S3 repository at \"{}\"', _repository)
 
       // Inject our repository in the list
       def _instance = repositories.maven {
