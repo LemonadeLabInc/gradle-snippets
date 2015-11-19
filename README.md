@@ -46,6 +46,8 @@ This plugin will:
      in the build file.
    * Add the [Publishing Plugin](#publishing-plugin) if the `maven-publish`
      plugin was specified in the build file.
+   * Add the [S3 Repository Plugin](#s3-repository-plugin) if the project has
+     the `s3.repository` property or `S3_REPOSITORY` environment variable.
 
 
 Android Plugin
@@ -88,9 +90,6 @@ S3 Repository Plugin
 apply plugin: 'de.lemona.gradle.s3'
 ```
 
-> _Note:_ This plugin is not automatically configured by the
-> [Main Plugin](#main-plugin), but needs to be **manually specified**
-
 This plugin requires three parameters:
 
 * `s3.repository` property or `S3_REPOSITORY` environment variable
@@ -106,6 +105,8 @@ backed Maven repository.
 If the `maven-publish` plugin is also present, all publications will *also*
 be uploaded to the same repository (using the same credentials).
 
+In this case, use the `uploadS3` task to _actually_ perform the upload (the
+`publish` task alone will only publish locally).
 
 
 Versioning

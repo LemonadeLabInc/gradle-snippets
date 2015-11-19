@@ -22,7 +22,7 @@ class PublishPlugin implements Plugin<Project> {
         def _repositoryPath = new File(buildDir, 'maven')
 
         // Inform where we are publishing to
-        logger.lifecycle('Publishing artifacts to \"{}\"', _repositoryPath.toURI())
+        logger.info('Publishing artifacts to \"{}\"', _repositoryPath.toURI())
 
         // Inject our repository
         publishing {
