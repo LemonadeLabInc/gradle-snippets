@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+// Group and version
+group = 'de.lemona.gradle'
+version = '0.0'
+if (hasProperty('buildNumber')) {
+  version = version + '.' + ext['buildNumber']
+} else if (System.getenv('BUILD_NUMBER') != null) {
+  version = version + '.' + System.getenv('BUILD_NUMBER')
+} else {
+  version = version + '-SNAPSHOT'
+}
+
+// Source and target compatibility
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.gradle:gradle-core:2.6'
+    compile 'org.codehaus.groovy:groovy-all:2.4.4'
+}
+
+// Sources JAR for publishing
+task publishSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+// Publishing configuration
+publishing {
+  repositories {
+    maven {
+      name 'build'
+      url "$buildDir/maven"
+    }
+  }
+  publications {
+    main(MavenPublication) {
+      from components.java
+      artifact publishSourcesJar
+    }
+  }
+}
