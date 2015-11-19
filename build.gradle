@@ -1,15 +1,22 @@
+plugins {
+  id 'com.gradle.plugin-publish' version '0.9.1'
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 // Group and version
-group = 'de.lemona.gradle'
+group = 'de.lemona'
 version = '0.0'
+def _canPublish = false
 if (hasProperty('buildNumber')) {
   version = version + '.' + ext['buildNumber']
+   _canPublish = true
 } else if (System.getenv('BUILD_NUMBER') != null) {
   version = version + '.' + System.getenv('BUILD_NUMBER')
+   _canPublish = true
 } else {
   version = version + '-SNAPSHOT'
 }
@@ -21,6 +28,7 @@ targetCompatibility = '1.7'
 // Depend on Gradle API
 dependencies {
   compile gradleApi()
+  compile localGroovy()
 }
 
 // Eclipse configuration
@@ -50,6 +58,22 @@ publishing {
     main(MavenPublication) {
       from components.java
       artifact publishSourcesJar
+    }
+  }
+}
+
+// Try uploading to Gradle's repo
+if (_canPublish) {
+  pluginBundle {
+    website = 'http://www.lemona.de/'
+    vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
+    description = 'Lemonade Android and Java conventions plugin'
+    tags = [ 'lemonade' ]
+    plugins {
+      gradle {
+        id = 'de.lemona.gradle'
+        displayName = 'Lemonade Gradle plugin'
+      }
     }
   }
 }
