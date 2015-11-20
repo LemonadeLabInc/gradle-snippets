@@ -38,15 +38,13 @@ class S3Plugin implements Plugin<Project> {
       plugins.withId('maven-publish') {
 
         // Define the S3 repository to publish to
-        publishing {
-          repositories {
-            maven {
-              name 's3'
-              url _repository
-              credentials(AwsCredentials) {
-                accessKey _accessKey
-                secretKey _secretKey
-              }
+        publishing.repositories {
+          maven {
+            name 's3'
+            url _repository
+            credentials(AwsCredentials) {
+              accessKey _accessKey
+              secretKey _secretKey
             }
           }
         }
