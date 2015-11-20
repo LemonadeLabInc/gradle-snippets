@@ -1,5 +1,6 @@
 plugins {
   id 'com.gradle.plugin-publish' version '0.9.1'
+  id 'de.lemona.gradle'          version '0.0.2'
 }
 
 apply plugin: 'java'
@@ -7,71 +8,30 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-// Group and version
-def _canPublish = false
-if (hasProperty('buildNumber')) {
-  version = version + '.' + ext['buildNumber']
-   _canPublish = true
-} else if (System.getenv('BUILD_NUMBER') != null) {
-  version = version + '.' + System.getenv('BUILD_NUMBER')
-   _canPublish = true
-} else {
-  version = version + '-SNAPSHOT'
-}
-
-// Source and target compatibility
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
-
 // Depend on Gradle API
 dependencies {
   compile gradleApi()
   compile localGroovy()
 }
 
-// Eclipse configuration
-eclipse {
-  classpath {
-    defaultOutputDir = file('.eclipse-out')
-    downloadSources = true
-    downloadJavadoc = true
+// Disabling upload for SNAPSHOT builds
+gradle.taskGraph.whenReady { taskGraph ->
+  if (version.isSnapshot) {
+    logger.lifecycle('Disabling pulbishing for snapshot')
+    tasks.publishPlugins.enabled = false;
   }
 }
 
-// Sources JAR for publishing
-task publishSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-// Publishing configuration
-publishing {
-  repositories {
-    maven {
-      name 'build'
-      url "$buildDir/maven"
-    }
-  }
-  publications {
-    main(MavenPublication) {
-      from components.java
-      artifact publishSourcesJar
-    }
-  }
-}
-
-// Try uploading to Gradle's repo
-if (_canPublish) {
-  pluginBundle {
-    website = 'http://www.lemona.de/'
-    vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
-    description = 'Lemonade Android and Java conventions plugin'
-    tags = [ 'lemonade' ]
-    plugins {
-      gradle {
-        id = 'de.lemona.gradle'
-        displayName = 'Lemonade Gradle plugin'
-      }
+// Plugin details
+pluginBundle {
+  website = 'http://www.lemona.de/'
+  vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
+  description = 'Lemonade Android and Java conventions plugin'
+  tags = [ 'lemonade' ]
+  plugins {
+    gradle {
+      id = 'de.lemona.gradle'
+      displayName = 'Lemonade Gradle plugin'
     }
   }
 }
