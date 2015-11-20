@@ -36,13 +36,13 @@ class PublishPlugin implements Plugin<Project> {
         plugins.withId('java') {
 
           // Sources JAR for publishing
-          task publishSourcesJar(type: Jar) {
+          task([type: Jar], 'publishSourcesJar') {
             classifier = 'sources'
             from sourceSets.main.allSource
           }
 
           // JavaDoc JAR for publishing
-          task publishJavadocJar(type: Jar, dependsOn: javadoc) {
+          task([type: Jar, dependsOn: javadoc], 'publishJavadocJar') {
             classifier = 'javadoc'
             from javadoc.destinationDir
           }
