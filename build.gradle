@@ -8,8 +8,6 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 // Group and version
-group = 'de.lemona'
-version = '0.0'
 def _canPublish = false
 if (hasProperty('buildNumber')) {
   version = version + '.' + ext['buildNumber']
