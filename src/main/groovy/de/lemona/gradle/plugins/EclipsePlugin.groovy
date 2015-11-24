@@ -28,7 +28,7 @@ class EclipsePlugin implements Plugin<Project> {
     project.configure(project) {
 
       // Create a "project.properties" for eclipse
-      task([group: 'IDE tasks'], 'eclipseAndroid') {
+      task([group: 'IDE'], 'eclipseAndroid') {
           description 'Generate the local "project.properties" file for Android'
       } << {
         def prop = new Properties()
