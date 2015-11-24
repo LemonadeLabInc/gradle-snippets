@@ -1,9 +1,10 @@
 package de.lemona.gradle.plugins
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
 import org.gradle.api.internal.java.JavaLibrary
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 
@@ -25,6 +26,42 @@ class PublishPlugin implements Plugin<Project> {
           repositories {
             maven {
               url _repositoryPath
+            }
+          }
+        }
+
+        /* ================================================================== */
+        /* FREEZE VERSIONS TO WHAT WAS RESOLVED (IOW, UPGRADE!)               */
+        /* ================================================================== */
+
+        afterEvaluate {
+          publishing.publications.all { publication ->
+            publication.pom.withXml {
+
+              // Collect all artifacts we depend on
+              Set<ResolvedArtifact> resolvedArtifacts = []
+              configurations.all { config ->
+                resolvedArtifacts.addAll config.resolvedConfiguration.resolvedArtifacts
+              }
+
+              // Keep a map of resolved group:name => version
+              Map resolvedVersionMap = [:]
+              resolvedArtifacts.each {
+                  def mvi = it.moduleVersion.id
+                  resolvedVersionMap.put("${mvi.group}:${mvi.name}", mvi.getVersion())
+              }
+
+              // Update POM dependencies with resolved versions
+              asNode().dependencies.first().each {
+                def groupId = it.get("groupId").first().value().first()
+                def artifactId = it.get("artifactId").first().value().first()
+                def pomVersion = it.get("version").first().value().first()
+                def newVersion = resolvedVersionMap.get("${groupId}:${artifactId}")
+                if (pomVersion != newVersion) {
+                  logger.lifecycle('Changing version for "{}:{}" from {} to {}', groupId, artifactId, pomVersion, newVersion)
+                  it.get("version").first().value = newVersion
+                }
+              }
             }
           }
         }
