@@ -15,7 +15,7 @@ class AndroidPlugin implements Plugin<Project> {
   def configAndroid = { project ->
 
     // Global JavaDoc task (dependencies will be added for each variant)
-    project.task([group: 'Documentation tasks'], 'javadoc') {
+    project.task([group: 'Documentation'], 'javadoc') {
         description 'Generates Javadoc API documentation'
     }
 
@@ -55,7 +55,7 @@ class AndroidPlugin implements Plugin<Project> {
     project.configure(project) {
 
       // Create a "javadoc" task (emulating Java basically)
-      tasks.javadoc.dependsOn += task([type: Javadoc, group: 'Documentation tasks'], 'javadoc' + variantName) {
+      tasks.javadoc.dependsOn += task([type: Javadoc, group: 'Documentation'], 'javadoc' + variantName) {
         options.links("http://docs.oracle.com/javase/7/docs/api/")
         description 'Generates '  + variantName  + ' Javadoc API documentation'
         destinationDir = file("$buildDir/docs/javadoc-${variant.name}");
