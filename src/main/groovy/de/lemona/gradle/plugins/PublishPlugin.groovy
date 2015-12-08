@@ -52,14 +52,17 @@ class PublishPlugin implements Plugin<Project> {
               }
 
               // Update POM dependencies with resolved versions
-              asNode().dependencies.first().each {
-                def groupId = it.get("groupId").first().value().first()
-                def artifactId = it.get("artifactId").first().value().first()
-                def pomVersion = it.get("version").first().value().first()
-                def newVersion = resolvedVersionMap.get("${groupId}:${artifactId}")
-                if (pomVersion != newVersion) {
-                  logger.lifecycle('Changing version for "{}:{}" from {} to {}', groupId, artifactId, pomVersion, newVersion)
-                  it.get("version").first().value = newVersion
+              def _dependencies = asNode().dependencies
+              if ((_dependencies != null) && (! _dependencies.isEmpty())) {
+                _dependencies.first().each {
+                  def groupId = it.get("groupId").first().value().first()
+                  def artifactId = it.get("artifactId").first().value().first()
+                  def pomVersion = it.get("version").first().value().first()
+                  def newVersion = resolvedVersionMap.get("${groupId}:${artifactId}")
+                  if (pomVersion != newVersion) {
+                    logger.lifecycle('Changing version for "{}:{}" from {} to {}', groupId, artifactId, pomVersion, newVersion)
+                    it.get("version").first().value = newVersion
+                  }
                 }
               }
             }
