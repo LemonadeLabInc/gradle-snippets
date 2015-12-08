@@ -19,15 +19,18 @@ class AndroidPlugin implements Plugin<Project> {
         description 'Generates Javadoc API documentation'
     }
 
+    // Inject our version and version code
+    project.android.defaultConfig.versionCode = project.version.versionCode
+    project.android.defaultConfig.versionName = project.version.toString()
+
     // Always after evaluation
     project.afterEvaluate {
-      project.configure(project) {
 
       // Load "AndroidTestTask" here, we don't have the android plugin at compile time
       def _androidTestTask = Class.forName('com.android.build.gradle.internal.tasks.AndroidTestTask')
 
       // Tests logged at "LIFECYCLE" level (this requires hackery)
-      tasks.withType(_androidTestTask).each { _task ->
+      project.tasks.withType(_androidTestTask).each { _task ->
         def _logger = _task.getILogger()
         def _field = _logger.class.getDeclaredField('infoLogLevel');
         _field.setAccessible(true);
@@ -48,7 +51,7 @@ class AndroidPlugin implements Plugin<Project> {
         }
       }
     }
-  }}
+  }
 
   def configAndroidVariant = { project, variant ->
     def variantName = variant.name.capitalize()
