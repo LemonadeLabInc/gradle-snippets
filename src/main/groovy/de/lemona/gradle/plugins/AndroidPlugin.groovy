@@ -54,6 +54,9 @@ class AndroidPlugin implements Plugin<Project> {
     def variantName = variant.name.capitalize()
     project.configure(project) {
 
+        // No "package-list" file exists in Android docs, use our local copy
+      def _packageList = getClass().getClassLoader().getResource('javadoc/package-list');
+
       // Create a "javadoc" task (emulating Java basically)
       tasks.javadoc.dependsOn += task([type: Javadoc, group: 'Documentation'], 'javadoc' + variantName) {
         options.links("http://docs.oracle.com/javase/7/docs/api/")
@@ -61,8 +64,11 @@ class AndroidPlugin implements Plugin<Project> {
         destinationDir = file("$buildDir/docs/javadoc-${variant.name}");
         dependsOn 'compile' + variantName + 'JavaWithJavac'
 
-        // No "package-list" file exists in Android docs
-        // options.links("http://d.android.com/reference/")
+        // If we have a package list, link to JavaDoc
+        if (_packageList != null) {
+          def _packageListDir = _packageList.toString().replaceAll(/\/package-list$/, '/');
+          options.linksOffline("http://d.android.com/reference/", _packageListDir)
+        }
 
         // Sources to JavaDOC
         source variant.javaCompile.source
