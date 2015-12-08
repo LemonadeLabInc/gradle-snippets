@@ -162,6 +162,44 @@ class PublishPlugin implements Plugin<Project> {
             }
           }
         }
+
+        /* ================================================================== */
+        /* ANDROID APPLICATION PROJECT PUBLISHING                             */
+        /* ================================================================== */
+
+        plugins.withId('com.android.application') {
+
+          // By default we publish the "release" variant
+          def _variant = Utilities.resolveValue(project, 'publishVariant', 'PUBLISH_VARIANT', 'release')
+          def _variantName = _variant.capitalize()
+
+          // Process all the application variants
+          android.applicationVariants.all { variant ->
+            if (variant.name != _variant) {
+              logger.info('Skipping publishing of "{}" variant', variant.name)
+              return;
+            }
+
+            // The package task (creates APK) and version code
+            def _packageTask = tasks['package' + _variantName]
+            def _versionCode = version.versionCode
+
+            // Make sure we *depend* on the package task
+            tasks['publish'].dependsOn _packageTask
+
+            // Create our APK publication
+            publishing.publications.create(_variant, MavenPublication) {
+              artifact _packageTask.outputFile
+              pom {
+                packaging = 'apk'
+                withXml {
+                  asNode().appendNode('properties')
+                    .appendNode('versionCode', _versionCode)
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
