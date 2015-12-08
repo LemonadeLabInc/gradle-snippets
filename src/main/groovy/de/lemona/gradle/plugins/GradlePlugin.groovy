@@ -41,7 +41,7 @@ class GradlePlugin implements Plugin<Project> {
       }
 
       // Notify out in the build script
-      logger.lifecycle('Initialized {}:{} version {}', group, name, version)
+      logger.lifecycle('Initialized {}:{} version {} (0x{})', group, name, version, Integer.toHexString(version.versionCode))
     }
   }
 }
