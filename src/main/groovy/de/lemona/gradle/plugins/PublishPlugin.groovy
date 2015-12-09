@@ -87,11 +87,14 @@ class PublishPlugin implements Plugin<Project> {
             from javadoc.destinationDir
           }
 
-          // Create a "java" maven publication
-          publishing.publications.create('java', MavenPublication) {
-            from components.java
-            artifact publishSourcesJar
-            artifact publishJavadocJar
+          // Create a "java" maven publication *AFTER* the project has been
+          // evaluated. If we do this now, dependencies will not be included...
+          afterEvaluate {
+            publishing.publications.create('java', MavenPublication) {
+              from components.java
+              artifact publishSourcesJar
+              artifact publishJavadocJar
+            }
           }
         }
 
