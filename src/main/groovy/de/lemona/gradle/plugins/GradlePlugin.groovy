@@ -1,5 +1,6 @@
 package de.lemona.gradle.plugins
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -12,6 +13,9 @@ class GradlePlugin implements Plugin<Project> {
 
     // Start processing version setup
     Version.setup(project)
+
+    // Create our extension
+    project.extensions.create("lemonade", Extension, project)
 
     // Configure the project
     project.configure(project) {

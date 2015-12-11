@@ -72,6 +72,22 @@ This plugin will:
    * Add the [S3 Repository Plugin](#s3-repository-plugin) if the project has
      the `s3.repository` property or `S3_REPOSITORY` environment variable.
 
+The plugin will also inject a `lemonade` extension in the project containing
+few utility methods:
+
+* `requireValue(String propertyName, String envVariableName)`
+  * Resolve a property name or an environment variable, failing if either/or
+    was not defined.
+* `resolveValue(String propertyName, String envVariableName)`
+  * Resolve a property name or an environment variable, returning `null` if
+    both were not defined.
+* `resolveValue(String propertyName, String envVariableName, Object defaultValue)`
+  * Resolve a property name or an environment variable, returning the specified
+    default value if both were not defined.
+* `readProperties(Object fileName)`
+  * Read a properties file (relative to the project root) injecting the
+    properties as `ext` properties to the current project.
+
 
 Android Plugin
 --------------
@@ -80,9 +96,40 @@ Android Plugin
 apply plugin: 'de.lemona.gradle.android'
 ```
 
-This simple plugin will only highlight test results in the console output
-(for better integration with build systems) and create a `javadoc` task per
-each build _variant_ (`debug`, `release`, ...).
+This simple plugin will highlight test results in the console output (for
+better integration with build systems) and create a `javadoc` task per each
+build _variant_ (`debug`, `release`, ...).
+
+It will also simplify the generation of `signingConfigs` by adding a `from`
+method in the plugin. For example:
+
+```groovy
+signingConfigs {
+  from(debug, '../debugKeyStore.jks', 'debugKeyAlias')
+  from(release, '../releaseKeyStore.jks', 'releaseKeyAlias')
+}
+```
+
+The `from(...)` method will take three parameters:
+
+* The **configuration** to sign (required)
+* An optional **keystore file** (defaults to `keystore.jks`) relative to the
+  project root (if a `String`), or a `File`.
+* An optional **key alias** (defaults to the **configuration name**) of the
+  key alias in the key store to use.
+
+Few properties and/or environment variables are needed for the configuration:
+
+* `keystorePassword` property or `KEYSTORE_PASSWORD` environment variable
+  * The password to decrypt the key store file
+* `aliasNameKeyPassword` property or `ALIASNAME_KEY_PASSWORD` environment variable
+  * The password the key was encrypted with
+
+In the example above, given the two `debugKeyAlias` and `releaseKeyAlias`
+values, the properties searched will be `debugKeyAliasKeyPassword` and
+`releaseKeyAliasKeyPassword`, while the environment variable names will be
+`DEBUGKEYALIAS_KEY_PASSWORD` and `RELEASEKEYALIAS_KEY_PASSWORD`.
+
 
 
 Publishing Plugin

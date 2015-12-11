@@ -1,6 +1,8 @@
 package de.lemona.gradle.plugins
 
+import org.gradle.api.GradleException
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.javadoc.Javadoc
@@ -13,6 +15,27 @@ class AndroidPlugin implements Plugin<Project> {
   }
 
   def configAndroid = { project ->
+
+    // Inject our "from(...)" signature method in the android signingConfigs
+    project.android.signingConfigs.metaClass.from = { conf, keystoreFile = null, keyAlias = null ->
+
+      if (keystoreFile == null) keystoreFile = project.file('keystore.jks');
+      if (keystoreFile instanceof String) keystoreFile = project.file(keystoreFile)
+      if (! keystoreFile.isFile()) throw new GradleException("Keystore file ${keystoreFile} not found")
+
+      if (keyAlias == null) keyAlias = conf.name.toLowerCase();
+
+      def keystorePassword = Utilities.requireValue(project, 'keystorePassword', 'KEYSTORE_PASSWORD')
+
+      def propertyName = keyAlias.toLowerCase() + 'KeyPassword';
+      def envVarName = keyAlias.toUpperCase() + '_KEY_PASSWORD';
+      def keyPassword = Utilities.requireValue(project, propertyName, envVarName)
+
+      conf.storeFile keystoreFile
+      conf.storePassword keystorePassword
+      conf.keyPassword keyPassword
+      conf.keyAlias keyAlias
+    }
 
     // Global JavaDoc task (dependencies will be added for each variant)
     project.task([group: 'Documentation'], 'javadoc') {
