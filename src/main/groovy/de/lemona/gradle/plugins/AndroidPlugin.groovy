@@ -49,17 +49,6 @@ class AndroidPlugin implements Plugin<Project> {
     // Always after evaluation
     project.afterEvaluate {
 
-      // Load "AndroidTestTask" here, we don't have the android plugin at compile time
-      def _androidTestTask = Class.forName('com.android.build.gradle.internal.tasks.AndroidTestTask')
-
-      // Tests logged at "LIFECYCLE" level (this requires hackery)
-      project.tasks.withType(_androidTestTask).each { _task ->
-        def _logger = _task.getILogger()
-        def _field = _logger.class.getDeclaredField('infoLogLevel');
-        _field.setAccessible(true);
-        _field.set(_logger, LogLevel.LIFECYCLE)
-      }
-
       // Configure variants for library project
       project.plugins.withId('com.android.library') {
         project.android.libraryVariants.all { variant ->
