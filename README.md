@@ -210,3 +210,14 @@ will have `versionCode=16908293` (or in hex `0x01020005`).
 Builds are always considered to be _snapshot_ builds unless the `buildNumber`
 property or the `BUILD_NUMBER` environment variables are specified.
 
+Publishing
+----------
+
+Simply get the API keys after logging in on the Gradle Plugins website then:
+
+```console
+$ gradle -PbuildNumber=... \
+         -Pgradle.publish.key=... \
+         -Pgradle.publish.secret=...
+         clean publishPlugins
+```
