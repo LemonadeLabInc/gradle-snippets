@@ -11,6 +11,12 @@ customize the standard build conventions to the ones used at
 * [S3 Repository Plugin](#s3-repository-plugin)
 
 
+Supported Version
+-----------------
+* Gradle 2.13
+* Android 1.5.0/2.1.0
+
+
 Important Note
 --------------
 
