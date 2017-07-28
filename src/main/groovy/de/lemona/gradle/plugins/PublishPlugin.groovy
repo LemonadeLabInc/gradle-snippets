@@ -122,8 +122,14 @@ class PublishPlugin implements Plugin<Project> {
               from android.sourceSets.main.resourcesDirectories
             }
 
+            def _jarTaskName = 'package' + _variantName + 'Jar'
+            if (tasks.findByName(_jarTaskName) == null) {
+              task([type: Jar], _jarTaskName) { }
+              println 'No Jar task found, creating one: ' + _jarTaskName
+            }
+
             // Prepare our publication artifact (from the AAR)
-            def _packageTask = tasks['package' + _variantName + 'Jar']
+            def _packageTask = tasks[_jarTaskName]
             def _artifact = new ArchivePublishArtifact(_packageTask);
             def _dependencies = configurations.compile.dependencies
             def _component = new JavaLibrary(_artifact, _dependencies);
