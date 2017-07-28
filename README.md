@@ -17,6 +17,7 @@ Supported Version
 * Android 1.5.0/2.1.0 - 2.3.0
 
 In order to take advantage of the latest versions of Gradle and Android, see  [updating.md](updating.md).
+
 Important Note
 --------------
 
