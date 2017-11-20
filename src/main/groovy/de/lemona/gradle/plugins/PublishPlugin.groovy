@@ -40,7 +40,9 @@ class PublishPlugin implements Plugin<Project> {
 
               // Collect all artifacts we depend on
               Set<ResolvedArtifact> resolvedArtifacts = []
-              configurations.all { config ->
+              configurations.findAll {
+                  canBeResolved(it)
+              }.each { config ->
                 resolvedArtifacts.addAll config.resolvedConfiguration.resolvedArtifacts
               }
 
@@ -211,5 +213,11 @@ class PublishPlugin implements Plugin<Project> {
         }
       }
     }
+  }
+
+  def canBeResolved(configuration) {
+    // isCanBeResolved() was introduced with Gradle 3.3 so check for its existence first
+    configuration.metaClass.respondsTo(configuration, "isCanBeResolved") ?
+        configuration.isCanBeResolved() : true
   }
 }

@@ -17,7 +17,7 @@ dependencies {
 // Disabling upload for SNAPSHOT builds
 gradle.taskGraph.whenReady { taskGraph ->
   if (version.isSnapshot) {
-    logger.lifecycle('Disabling pulbishing for snapshot')
+    logger.lifecycle('Disabling publishing for snapshot')
     tasks.publishPlugins.enabled = false;
   }
 }
