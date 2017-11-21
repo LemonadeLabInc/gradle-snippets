@@ -24,7 +24,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 // Plugin details
 pluginBundle {
-  website = 'http://www.lemona.de/'
+  website = 'https://www.leomo.io/'
   vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
   description = 'Lemonade Android and Java conventions plugin'
   tags = [ 'lemonade' ]
