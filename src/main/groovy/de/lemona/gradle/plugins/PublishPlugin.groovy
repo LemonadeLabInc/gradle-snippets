@@ -126,8 +126,12 @@ class PublishPlugin implements Plugin<Project> {
 
             def _jarTaskName = 'package' + _variantName + 'Jar'
             if (tasks.findByName(_jarTaskName) == null) {
-              task([type: Jar], _jarTaskName) { }
               println 'No Jar task found, creating one: ' + _jarTaskName
+              task([type: Jar], _jarTaskName) {
+                dependsOn variant.javaCompile
+                from variant.javaCompile.destinationDir
+                exclude '**/R.class', '**/R$*.class', '**/R.html', '**/R.*.html'
+              }
             }
 
             // Prepare our publication artifact (from the AAR)
