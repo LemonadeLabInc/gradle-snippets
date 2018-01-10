@@ -30,7 +30,7 @@ class EclipsePlugin implements Plugin<Project> {
       // Create a "project.properties" for eclipse
       task([group: 'IDE'], 'eclipseAndroid') {
           description 'Generate the local "project.properties" file for Android'
-      } << {
+      }.doLast {
         def prop = new Properties()
         prop.target = "${android.compileSdkVersion}".toString()
         def propFile = new File("${projectDir}/project.properties");
