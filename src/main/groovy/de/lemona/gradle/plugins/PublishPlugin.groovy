@@ -41,7 +41,13 @@ class PublishPlugin implements Plugin<Project> {
               // Collect all artifacts we depend on
               Set<ResolvedArtifact> resolvedArtifacts = []
               configurations.findAll {
-                  canBeResolved(it)
+                // For Scala projects, Gradle depends on zinc which depends on an older version of the scala-library.
+                // In order to allow the use of newer versions of the scala-library, ignore the dependency from zinc.
+                if (it.name == 'zinc') {
+                  return false
+                }
+
+                canBeResolved(it)
               }.each { config ->
                 resolvedArtifacts.addAll config.resolvedConfiguration.resolvedArtifacts
               }
