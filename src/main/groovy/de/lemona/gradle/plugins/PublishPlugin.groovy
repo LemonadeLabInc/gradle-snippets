@@ -31,53 +31,6 @@ class PublishPlugin implements Plugin<Project> {
         }
 
         /* ================================================================== */
-        /* FREEZE VERSIONS TO WHAT WAS RESOLVED (IOW, UPGRADE!)               */
-        /* ================================================================== */
-
-        afterEvaluate {
-          publishing.publications.all { publication ->
-            publication.pom.withXml {
-
-              // Collect all artifacts we depend on
-              Set<ResolvedArtifact> resolvedArtifacts = []
-              configurations.findAll {
-                // For Scala projects, Gradle depends on zinc which depends on an older version of the scala-library.
-                // In order to allow the use of newer versions of the scala-library, ignore the dependency from zinc.
-                if (it.name == 'zinc') {
-                  return false
-                }
-
-                canBeResolved(it)
-              }.each { config ->
-                resolvedArtifacts.addAll config.resolvedConfiguration.resolvedArtifacts
-              }
-
-              // Keep a map of resolved group:name => version
-              Map resolvedVersionMap = [:]
-              resolvedArtifacts.each {
-                  def mvi = it.moduleVersion.id
-                  resolvedVersionMap.put("${mvi.group}:${mvi.name}", mvi.getVersion())
-              }
-
-              // Update POM dependencies with resolved versions
-              def _dependencies = asNode().dependencies
-              if ((_dependencies != null) && (! _dependencies.isEmpty())) {
-                _dependencies.first().each {
-                  def groupId = it.get("groupId").first().value().first()
-                  def artifactId = it.get("artifactId").first().value().first()
-                  def pomVersion = it.get("version").first().value().first()
-                  def newVersion = resolvedVersionMap.get("${groupId}:${artifactId}")
-                  if (pomVersion != newVersion) {
-                    logger.lifecycle('Changing version for "{}:{}" from {} to {}', groupId, artifactId, pomVersion, newVersion)
-                    it.get("version").first().value = newVersion
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        /* ================================================================== */
         /* JAVA PROJECT PUBLISHING                                            */
         /* ================================================================== */
 
