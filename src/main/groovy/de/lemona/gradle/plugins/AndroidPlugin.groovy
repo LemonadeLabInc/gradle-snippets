@@ -86,11 +86,11 @@ class AndroidPlugin implements Plugin<Project> {
         }
 
         // Sources to JavaDOC
-        source variant.javaCompile.source
+        source variant.javaCompiler.source
 
         // Start with the "default" Android SDK classpath and add our variant classpath
         classpath = files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar")
-        classpath += files(variant.javaCompile.classpath.files)
+        classpath += files(variant.javaCompiler.classpath)
 
         // Exclude generated stuff
         exclude '**/BuildConfig.java'
