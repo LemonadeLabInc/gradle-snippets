@@ -1,10 +1,9 @@
 package de.lemona.gradle.plugins
 
-import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
-import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 
@@ -173,7 +172,7 @@ class PublishPlugin implements Plugin<Project> {
                                         }
                                         return false
                                     }
-                                });
+                                })
                                 if (files != null && files.length > 0) {
                                     File apk = files[0]
                                     artifact apk.absolutePath
