@@ -1,10 +1,9 @@
 package de.lemona.gradle.plugins
 
-import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
-import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 
@@ -87,8 +86,8 @@ class PublishPlugin implements Plugin<Project> {
             if (tasks.findByName(_jarTaskName) == null) {
               println 'No Jar task found, creating one: ' + _jarTaskName
               task([type: Jar], _jarTaskName) {
-                dependsOn variant.javaCompile
-                from variant.javaCompile.destinationDir
+                dependsOn variant.javaCompiler
+                from variant.javaCompiler.destinationDir
                 exclude '**/R.class', '**/R$*.class', '**/R.html', '**/R.*.html'
               }
             }
@@ -112,7 +111,7 @@ class PublishPlugin implements Plugin<Project> {
                 packaging = 'jar'
                 withXml {
                   asNode().appendNode('properties')
-                    .appendNode('versionCode', _versionCode)
+                          .appendNode('versionCode', _versionCode)
                 }
               }
             }
@@ -163,12 +162,27 @@ class PublishPlugin implements Plugin<Project> {
 
             // Create our APK publication
             publishing.publications.create(_variant, MavenPublication) {
-              artifact _packageTask.outputFile
-              pom {
-                packaging = 'apk'
-                withXml {
-                  asNode().appendNode('properties')
-                    .appendNode('versionCode', _versionCode)
+              _packageTask.outputs.files.each {
+                logger.debug("debugInfo: output files {}", it.toString())
+                def files = it.listFiles(new FileFilter() {
+                  @Override
+                  boolean accept(File file) {
+                    if (file.name.endsWith(".apk") && file.name.contains(_variant)) {
+                      return true;
+                    }
+                    return false
+                  }
+                })
+                if (files != null && files.length > 0) {
+                  File apk = files[0]
+                  artifact apk.absolutePath
+                  pom {
+                    packaging = 'apk'
+                    withXml {
+                      asNode().appendNode('properties')
+                              .appendNode('versionCode', _versionCode)
+                    }
+                  }
                 }
               }
             }
@@ -181,6 +195,6 @@ class PublishPlugin implements Plugin<Project> {
   def canBeResolved(configuration) {
     // isCanBeResolved() was introduced with Gradle 3.3 so check for its existence first
     configuration.metaClass.respondsTo(configuration, "isCanBeResolved") ?
-        configuration.isCanBeResolved() : true
+            configuration.isCanBeResolved() : true
   }
 }
