@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 // Depend on Gradle API
 dependencies {
-    compile localGroovy()
+    implementation localGroovy()
 }
 
 // Disabling upload for SNAPSHOT builds
