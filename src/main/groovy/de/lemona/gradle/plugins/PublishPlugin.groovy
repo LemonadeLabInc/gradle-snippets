@@ -99,7 +99,7 @@ class PublishPlugin implements Plugin<Project> {
             def _component = new JavaLibrary(_artifact, _dependencies);
 
             // Also get the AAR itself, to publish alongsite
-            def _bundleTask = tasks['bundle' + _variantName]
+            def _bundleTask = tasks['bundle' + _variantName + 'Aar']
 
             // Publish in our maven repository
             def _versionCode = version.versionCode
