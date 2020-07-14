@@ -24,12 +24,12 @@ gradle.taskGraph.whenReady { taskGraph ->
 pluginBundle {
     website = 'https://www.leomo.io/'
     vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
-    description = 'Lemonade Android and Java conventions plugin'
-    tags = ['lemonade']
+    description = 'LEOMO Android and Java conventions plugin'
+    tags = ['leomo']
     plugins {
         gradle {
             id = 'de.lemona.gradle'
-            displayName = 'Lemonade Gradle plugin'
+            displayName = 'LEOMO Gradle plugin'
         }
     }
 }
