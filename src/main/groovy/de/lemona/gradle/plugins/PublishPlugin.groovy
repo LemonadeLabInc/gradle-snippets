@@ -104,10 +104,4 @@ class PublishPlugin implements Plugin<Project> {
             }
         }
     }
-
-    def canBeResolved(configuration) {
-        // isCanBeResolved() was introduced with Gradle 3.3 so check for its existence first
-        configuration.metaClass.respondsTo(configuration, "isCanBeResolved") ?
-                configuration.isCanBeResolved() : true
-    }
 }
