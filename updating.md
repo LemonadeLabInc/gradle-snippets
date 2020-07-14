@@ -1,5 +1,15 @@
 # Updating individual projects
 
+## Version 0.3.0
+0.3.0 supports Gradle 5.
+You can use the latest (as 2020) Android gradle plugin in dependent Android projects.
+However, the publishing plugin doesn't have a backward compatibility for Android projects.
+So, please update the followings:
+
+* Gradle -> 5.6.4
+* Android Plugin -> 3.6.0
+* Android Build Tools -> 28.0.3 or later
+
 ## Version 0.1.0
 
 The 0.1.0 version of this plugin is fully backward compatible. Simply bumping its version in dependent projects will have no side effects.
