@@ -1,15 +1,14 @@
-Lemonade Lab Gradle Plugins
+LEOMO Gradle Plugins
 ===========================
 
 This project contains a set of [Gradle](http://gradle.org/) plugins to
 customize the standard build conventions to the ones used at
-[Lemonade Lab](http://lemona.de/)
+[LEOMO, Inc.](http://leomo.io/)
 
 * [Main Plugin](#main-plugin)
 * [Android Plugin](#android-plugin)
 * [Publishing Plugin](#publishing-plugin)
 * [S3 Repository Plugin](#s3-repository-plugin)
-
 
 Supported Version
 -----------------
@@ -66,10 +65,11 @@ This plugin will:
    > be left untouched.</small>
 3. Initialize the project's `version` filed following Lemonade's
    [versioning convertions](#versioning)
-4. Set up three repositories for dependency resolution:
+4. Set up repositories for dependency resolution:
    * Lemonade's OSS repository on [Bintray](https://bintray.com/lemonade/maven).
    * Bintray's [JCenter](https://bintray.com/lemonade/maven) repository.
    * The [Maven Central](http://search.maven.org/) repository.
+   * [Google's Maven](https://maven.google.com/) repository.
 5. Set up the rest of our plugins:
    * Add the [Android Plugin](#android-plugin) if either the
      `com.android.application` or `com.android.library` plugins were specified
@@ -152,13 +152,11 @@ repository under `${buildDir}/maven`.
 For Java artifacts the main java component, sources and javadoc jars will
 be published.
 
-For Android _libraries_ the the jar, aar, sources and javadoc jars will be
-published under the `${buildDir}/maven/${variant.name}` directory.
+For Android _libraries_ the aar file will be published.
 
-By default the `release` variant will be published, to publish a _different_
-build variant specify its name in the `publishVariant` project property or
-`PUBLISH_VARIANT` environment variable.
+For Android _app_ an zip file which contains the apk file and the obfuscation mapping file.
 
+The `release` variant will be published.
 
 S3 Repository Plugin
 --------------------
