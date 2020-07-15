@@ -2,8 +2,6 @@ package de.lemona.gradle.plugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
-import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 
@@ -63,74 +61,20 @@ class PublishPlugin implements Plugin<Project> {
         /* ================================================================== */
 
         plugins.withId('com.android.library') {
+          // cf. https://developer.android.com/studio/build/maven-publish-plugin
+          afterEvaluate {
+            publishing {
+              publications {
+                def _group = group
+                def _name = name
+                def _version = version
+                release(MavenPublication) {
+                  from components.release
 
-          // By default we publish the "release" variant
-          def _variant = Utilities.resolveValue(project, 'publishVariant', 'PUBLISH_VARIANT', 'release')
-          def _variantName = _variant.capitalize()
-
-          // Process all the library variants
-          android.libraryVariants.all { variant ->
-            if (variant.name != _variant) {
-              logger.info('Skipping publishing of "{}" variant', variant.name)
-              return;
-            }
-
-            // Sources JAR for publishing
-            def _publishSourcesJar = task([type: Jar], 'publish' + _variantName + 'SourcesJar') {
-              classifier = 'sources'
-              from android.sourceSets.main.javaDirectories
-              from android.sourceSets.main.resourcesDirectories
-            }
-
-            def _jarTaskName = 'package' + _variantName + 'Jar'
-            if (tasks.findByName(_jarTaskName) == null) {
-              println 'No Jar task found, creating one: ' + _jarTaskName
-              task([type: Jar], _jarTaskName) {
-                dependsOn variant.javaCompiler
-                from variant.javaCompiler.destinationDir
-                exclude '**/R.class', '**/R$*.class', '**/R.html', '**/R.*.html'
-              }
-            }
-
-            // Prepare our publication artifact (from the AAR)
-            def _packageTask = tasks[_jarTaskName]
-            def _artifact = new ArchivePublishArtifact(_packageTask);
-            def _dependencies = configurations.compile.dependencies
-            def _component = new JavaLibrary(_artifact, _dependencies);
-
-            // Also get the AAR itself, to publish alongside
-            def _bundleTask = tasks['bundle' + _variantName + 'Aar']
-
-            // Publish in our maven repository
-            def _versionCode = version.versionCode
-            publishing.publications.create(_variant, MavenPublication) {
-              from _component
-              artifact _bundleTask
-              artifact _publishSourcesJar
-              pom {
-                packaging = 'jar'
-                withXml {
-                  asNode().appendNode('properties')
-                          .appendNode('versionCode', _versionCode)
+                  groupId = _group
+                  artifactId = _name
+                  version = _version
                 }
-              }
-            }
-
-            // The "javadocVariantName" task might not be here quite just yet
-            tasks.all { _javadocTask ->
-              // Ignore if not named "javadocVariantName"
-              if (_javadocTask.name != 'javadoc' + _variantName) return
-
-              // Create a "publishVariantNameJavadocJar" task from the _javadocTask
-              def _publishJavadocJar = task([type: Jar], 'publish' + _variantName + 'JavadocJar') {
-                dependsOn _javadocTask
-                classifier = 'javadoc'
-                from _javadocTask.destinationDir
-              }
-
-              // Add the Javadoc JAR artifact to our publication
-              publishing.publications.getByName(_variant) { publication ->
-                publication.artifact _publishJavadocJar
               }
             }
           }
@@ -141,48 +85,19 @@ class PublishPlugin implements Plugin<Project> {
         /* ================================================================== */
 
         plugins.withId('com.android.application') {
+          // cf. https://developer.android.com/studio/build/maven-publish-plugin
+          afterEvaluate {
+            publishing {
+              publications {
+                def _group = group
+                def _name = name
+                def _version = version
+                release(MavenPublication) {
+                  from components.release_apk
 
-          // By default we publish the "release" variant
-          def _variant = Utilities.resolveValue(project, 'publishVariant', 'PUBLISH_VARIANT', 'release')
-          def _variantName = _variant.capitalize()
-
-          // Process all the application variants
-          android.applicationVariants.all { variant ->
-            if (variant.name != _variant) {
-              logger.info('Skipping publishing of "{}" variant', variant.name)
-              return;
-            }
-
-            // The package task (creates APK) and version code
-            def _packageTask = tasks['package' + _variantName]
-            def _versionCode = version.versionCode
-
-            // Make sure we *depend* on the package task
-            tasks['publish'].dependsOn _packageTask
-
-            // Create our APK publication
-            publishing.publications.create(_variant, MavenPublication) {
-              _packageTask.outputs.files.each {
-                logger.debug("debugInfo: output files {}", it.toString())
-                def files = it.listFiles(new FileFilter() {
-                  @Override
-                  boolean accept(File file) {
-                    if (file.name.endsWith(".apk") && file.name.contains(_variant)) {
-                      return true;
-                    }
-                    return false
-                  }
-                })
-                if (files != null && files.length > 0) {
-                  File apk = files[0]
-                  artifact apk.absolutePath
-                  pom {
-                    packaging = 'apk'
-                    withXml {
-                      asNode().appendNode('properties')
-                              .appendNode('versionCode', _versionCode)
-                    }
-                  }
+                  groupId = _group
+                  artifactId = _name
+                  version = _version
                 }
               }
             }
@@ -190,11 +105,5 @@ class PublishPlugin implements Plugin<Project> {
         }
       }
     }
-  }
-
-  def canBeResolved(configuration) {
-    // isCanBeResolved() was introduced with Gradle 3.3 so check for its existence first
-    configuration.metaClass.respondsTo(configuration, "isCanBeResolved") ?
-            configuration.isCanBeResolved() : true
   }
 }
