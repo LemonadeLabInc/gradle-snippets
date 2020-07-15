@@ -19,23 +19,29 @@ class GradlePlugin implements Plugin<Project> {
         // Configure the project
         project.configure(project) {
 
-            // Trigger actions on our plugins
-            plugins.withId('java') { project.apply plugin: 'de.lemona.gradle.java' }
-            plugins.withId('java-library') { project.apply plugin: 'de.lemona.gradle.java' }
-            plugins.withId('maven-publish') { project.apply plugin: 'de.lemona.gradle.publish' }
+            Boolean _autoPluginApply = Utilities.resolveValue(project, 'leomo.enableAutoPluginApply', 'LEOMO_ENABLE_AUTO_PLUGIN_APPLY', true).toBoolean()
 
-            plugins.withId('com.android.application') {
-                project.apply plugin: 'de.lemona.gradle.android'
-            }
-            plugins.withId('com.android.library') {
-                project.apply plugin: 'de.lemona.gradle.android'
-            }
+            if (_autoPluginApply) {
+                logger.debug('Start applying suitable plugins')
 
-            plugins.withId('com.jfrog.bintray') { project.apply plugin: 'de.lemona.gradle.bintray' }
+                // Trigger actions on our plugins
+                plugins.withId('java') { project.apply plugin: 'de.lemona.gradle.java' }
+                plugins.withId('java-library') { project.apply plugin: 'de.lemona.gradle.java' }
+                plugins.withId('maven-publish') { project.apply plugin: 'de.lemona.gradle.publish' }
 
-            // S3 plugin gets triggered by property/env variable....
-            if (Utilities.resolveValue(project, 's3.repository', 'S3_REPOSITORY') != null) {
-                project.apply plugin: 'de.lemona.gradle.s3'
+                plugins.withId('com.android.application') {
+                    project.apply plugin: 'de.lemona.gradle.android'
+                }
+                plugins.withId('com.android.library') {
+                    project.apply plugin: 'de.lemona.gradle.android'
+                }
+
+                plugins.withId('com.jfrog.bintray') { project.apply plugin: 'de.lemona.gradle.bintray' }
+
+                // S3 plugin gets triggered by property/env variable....
+                if (Utilities.resolveValue(project, 's3.repository', 'S3_REPOSITORY') != null) {
+                    project.apply plugin: 'de.lemona.gradle.s3'
+                }
             }
 
             // Configure the default repositories: ours, google, jcenter, and maven central
