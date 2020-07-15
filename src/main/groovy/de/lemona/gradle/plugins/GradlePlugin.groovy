@@ -21,6 +21,7 @@ class GradlePlugin implements Plugin<Project> {
 
             // Trigger actions on our plugins
             plugins.withId('java') { project.apply plugin: 'de.lemona.gradle.java' }
+            plugins.withId('java-library') { project.apply plugin: 'de.lemona.gradle.java' }
             plugins.withId('maven-publish') { project.apply plugin: 'de.lemona.gradle.publish' }
 
             plugins.withId('com.android.application') {
