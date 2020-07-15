@@ -1,7 +1,11 @@
 # Updating individual projects
+## Version 0.3.8
+The main plugin (`de.lemona.gradle`) automatically applies other plugins based on the build file of dependent projects, as default.
 
-## Version 0.3.0
-0.3.0 supports Gradle 5.
+If you'd like to apply these plugins manually, please set the property to `false`.
+
+## Version 0.3.7
+0.3.7 supports Gradle 5.
 You can use the latest (as 2020) Android gradle plugin in dependent Android projects.
 However, the publishing plugin doesn't have a backward compatibility for Android projects.
 So, please update the followings:
