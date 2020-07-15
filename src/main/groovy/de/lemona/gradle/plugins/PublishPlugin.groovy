@@ -61,6 +61,7 @@ class PublishPlugin implements Plugin<Project> {
         /* ================================================================== */
 
         plugins.withId('com.android.library') {
+          // cf. https://developer.android.com/studio/build/maven-publish-plugin
           afterEvaluate {
             publishing {
               publications {
@@ -84,6 +85,7 @@ class PublishPlugin implements Plugin<Project> {
         /* ================================================================== */
 
         plugins.withId('com.android.application') {
+          // cf. https://developer.android.com/studio/build/maven-publish-plugin
           afterEvaluate {
             publishing {
               publications {
