@@ -1,6 +1,8 @@
 # Updating individual projects
 ## Version 0.3.8
-The main plugin (`de.lemona.gradle`) automatically applies other plugins based on the build file of dependent projects, as default.
+This version supports `leomo.enableAutoPluginApply` to enable/disable automatic plugin binding.
+
+As default, the main plugin (`de.lemona.gradle`) automatically applies other plugins based on the build file of dependent projects.
 
 If you'd like to apply these plugins manually, please set the property to `false`.
 
