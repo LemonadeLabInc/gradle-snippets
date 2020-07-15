@@ -7,6 +7,10 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
+// IDE
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 // Depend on Gradle API
 dependencies {
     implementation localGroovy()
