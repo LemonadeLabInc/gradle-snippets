@@ -28,36 +28,46 @@ gradle.taskGraph.whenReady { taskGraph ->
 pluginBundle {
     website = 'https://www.leomo.io/'
     vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
-    description = 'LEOMO Android and Java conventions plugin'
     tags = ['leomo']
 }
 
 gradlePlugin {
     plugins {
-        androidPlugin {
-            id = 'de.lemona.gradle.android'
-            implementationClass = 'de.lemona.gradle.plugins.AndroidPlugin'
-        }
-        bintrayPlugin {
-            id = 'de.lemona.gradle.bintray'
-            implementationClass = 'de.lemona.gradle.plugins.BintrayPlugin'
-        }
-        javaPlugin {
-            id = 'de.lemona.gradle.java'
-            implementationClass = 'de.lemona.gradle.plugins.JavaPlugin'
-        }
         gradlePlugin {
             id = 'de.lemona.gradle'
             implementationClass = 'de.lemona.gradle.plugins.GradlePlugin'
             displayName = 'LEOMO Gradle plugin'
+            description = 'LEOMO Android and Java conventions plugin'
+        }
+        androidPlugin {
+            id = 'de.lemona.gradle.android'
+            implementationClass = 'de.lemona.gradle.plugins.AndroidPlugin'
+            displayName = 'LEOMO Android plugin'
+            description = 'A plugin for building Android app or library. This plugin depends on de.lemona.gradle and Android plugins (com.android.application or com.android.library).'
+        }
+        bintrayPlugin {
+            id = 'de.lemona.gradle.bintray'
+            implementationClass = 'de.lemona.gradle.plugins.BintrayPlugin'
+            displayName = 'LEOMO Bintray plugin'
+            description = 'A plugin for publishing to Bintray. This plugin depends on de.lemona.gradle and com.jfrog.bintray.'
+        }
+        javaPlugin {
+            id = 'de.lemona.gradle.java'
+            implementationClass = 'de.lemona.gradle.plugins.JavaPlugin'
+            displayName = 'LEOMO Java plugin'
+            description = 'A plugin for building Java library. This plugin depends on de.lemona.gradle and Java plugins (java or java-library).'
         }
         publishPlugin {
             id = 'de.lemona.gradle.publish'
             implementationClass = 'de.lemona.gradle.plugins.PublishPlugin'
+            displayName = 'LEOMO Publishing plugin'
+            description = 'A plugin for publishing. This plugin depends on de.lemona.gradle and maven-publish.'
         }
         s3Plugin {
             id = 'de.lemona.gradle.s3'
             implementationClass = 'de.lemona.gradle.plugins.S3Plugin'
+            displayName = 'LEOMO S3 Repository plugin'
+            description = 'A plugin for using AWS S3 as a maven repository. This plugin depends on de.lemona.gradle and if you\'d like to publish to S3 also depends on maven-publish.'
         }
     }
 }
