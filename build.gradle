@@ -30,12 +30,6 @@ pluginBundle {
     vcsUrl = 'https://github.com/LemonadeLabInc/gradle-snippets'
     description = 'LEOMO Android and Java conventions plugin'
     tags = ['leomo']
-    plugins {
-        gradle {
-            id = 'de.lemona.gradle'
-            displayName = 'LEOMO Gradle plugin'
-        }
-    }
 }
 
 gradlePlugin {
@@ -55,6 +49,7 @@ gradlePlugin {
         gradlePlugin {
             id = 'de.lemona.gradle'
             implementationClass = 'de.lemona.gradle.plugins.GradlePlugin'
+            displayName = 'LEOMO Gradle plugin'
         }
         publishPlugin {
             id = 'de.lemona.gradle.publish'
