@@ -12,8 +12,8 @@ customize the standard build conventions to the ones used at
 
 Supported Version
 -----------------
-* Gradle 2.13 - 4.0.1
-* Android 1.5.0/2.1.0 - 2.3.0
+* Gradle 2.13 - 5.6.4
+* Android plugin 3.6.0
 
 In order to take advantage of the latest versions of Gradle and Android, see  [updating.md](updating.md).
 
@@ -78,6 +78,7 @@ This plugin will:
      plugin was specified in the build file.
    * Add the [S3 Repository Plugin](#s3-repository-plugin) if the project has
      the `s3.repository` property or `S3_REPOSITORY` environment variable.
+   > <small>_Note:_ if you'd like to avoid using these libraries, set `leomo.enableAutoPluginApply` property (or `LEOMO_ENABLE_AUTO_PLUGIN_APPLY` environment variable) to false. Default true.</small>
 
 The plugin will also inject a `lemonade` extension in the project containing
 few utility methods:
