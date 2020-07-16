@@ -37,14 +37,17 @@ gradlePlugin {
         androidPlugin {
             id = 'de.lemona.gradle.android'
             implementationClass = 'de.lemona.gradle.plugins.AndroidPlugin'
+            displayName = 'LEOMO Android plugin'
         }
         bintrayPlugin {
             id = 'de.lemona.gradle.bintray'
             implementationClass = 'de.lemona.gradle.plugins.BintrayPlugin'
+            displayName = 'LEOMO Bintray plugin'
         }
         javaPlugin {
             id = 'de.lemona.gradle.java'
             implementationClass = 'de.lemona.gradle.plugins.JavaPlugin'
+            displayName = 'LEOMO Java plugin'
         }
         gradlePlugin {
             id = 'de.lemona.gradle'
@@ -54,10 +57,12 @@ gradlePlugin {
         publishPlugin {
             id = 'de.lemona.gradle.publish'
             implementationClass = 'de.lemona.gradle.plugins.PublishPlugin'
+            displayName = 'LEOMO Publishing plugin'
         }
         s3Plugin {
             id = 'de.lemona.gradle.s3'
             implementationClass = 'de.lemona.gradle.plugins.S3Plugin'
+            displayName = 'LEOMO S3 Repository plugin'
         }
     }
 }
