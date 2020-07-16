@@ -1,12 +1,12 @@
 # Updating individual projects
-## Version 0.3.8
+## Version 0.3.13
 This version supports `leomo.enableAutoPluginApply` to enable/disable automatic plugin binding.
 
 As default, the main plugin (`de.lemona.gradle`) automatically applies other plugins based on the build file of dependent projects.
 
 If you'd like to apply these plugins manually, please set the property to `false`.
 
-## Version 0.3.7
+## Version 0.3.12
 0.3.7 supports Gradle 5.
 You can use the latest (as 2020) Android gradle plugin in dependent Android projects.
 However, the publishing plugin doesn't have a backward compatibility for Android projects.
