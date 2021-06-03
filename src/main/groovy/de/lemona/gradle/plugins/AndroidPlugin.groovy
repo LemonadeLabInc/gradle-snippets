@@ -27,7 +27,7 @@ class AndroidPlugin implements Plugin<Project> {
 
       def propertyName = keyAlias.toLowerCase() + 'KeyPassword'
       def envVarName = keyAlias.toUpperCase() + '_KEY_PASSWORD'
-      def keyPassword = Utilities.requireValue(project, propertyName, envVarName)
+      def keyPassword = Utilities.resolveValue(project, propertyName, envVarName, keystorePassword)
 
       conf.storeFile keystoreFile
       conf.storePassword keystorePassword

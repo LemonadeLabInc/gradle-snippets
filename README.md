@@ -66,8 +66,6 @@ This plugin will:
 3. Initialize the project's `version` filed following Lemonade's
    [versioning convertions](#versioning)
 4. Set up repositories for dependency resolution:
-   * Lemonade's OSS repository on [Bintray](https://bintray.com/lemonade/maven).
-   * Bintray's [JCenter](https://bintray.com/lemonade/maven) repository.
    * The [Maven Central](http://search.maven.org/) repository.
    * [Google's Maven](https://maven.google.com/) repository.
 5. Set up the rest of our plugins:
