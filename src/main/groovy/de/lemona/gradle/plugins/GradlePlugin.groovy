@@ -36,22 +36,15 @@ class GradlePlugin implements Plugin<Project> {
                     project.apply plugin: 'de.lemona.gradle.android'
                 }
 
-                plugins.withId('com.jfrog.bintray') { project.apply plugin: 'de.lemona.gradle.bintray' }
-
                 // S3 plugin gets triggered by property/env variable....
                 if (Utilities.resolveValue(project, 's3.repository', 'S3_REPOSITORY') != null) {
                     project.apply plugin: 'de.lemona.gradle.s3'
                 }
             }
 
-            // Configure the default repositories: ours, google, jcenter, and maven central
+            // Configure the default repositories: google and maven central
             repositories {
-                maven {
-                    name 'lemonade-oss'
-                    url 'https://dl.bintray.com/lemonade/maven'
-                }
                 google()
-                jcenter()
                 mavenCentral()
             }
 

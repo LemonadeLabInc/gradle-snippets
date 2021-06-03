@@ -45,12 +45,6 @@ gradlePlugin {
             displayName = 'LEOMO Android plugin'
             description = 'A plugin for building Android app or library. This plugin depends on de.lemona.gradle and Android plugins (com.android.application or com.android.library).'
         }
-        bintrayPlugin {
-            id = 'de.lemona.gradle.bintray'
-            implementationClass = 'de.lemona.gradle.plugins.BintrayPlugin'
-            displayName = 'LEOMO Bintray plugin'
-            description = 'A plugin for publishing to Bintray. This plugin depends on de.lemona.gradle and com.jfrog.bintray.'
-        }
         javaPlugin {
             id = 'de.lemona.gradle.java'
             implementationClass = 'de.lemona.gradle.plugins.JavaPlugin'
